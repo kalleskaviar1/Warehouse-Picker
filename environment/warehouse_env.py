@@ -22,3 +22,20 @@ class WarehouseEnv:
         for agent in self.agent_pos:
             obs.append(np.concatenate([agent.flatten(), np.array(self.item_pos).flatten()]))
         return obs
+    
+    #Changes the position of each agent at every step base on actions input
+    def step(self, actions):
+        rewards = []
+        #0: move up, 1: move down, 2: move left, 3: move right, 4:stay
+        move_map = {0: (-1,0), 1: (1,0), 2: (0,-1), 3: (0,1), 4: (0,0)}
+
+        for i, action in enumerate(actions):
+            #Moves to make for each agent
+            move = move_map[action]
+            #Update position
+            self.agent_pos[i] += np.array(move)
+            #Make sure still in grid
+            self.agent_pos[i] = np.clip(self.agent_pos[i], 0, self.grid_size-1)
+        
+        for i, agent in enumerate(self.agent_pos):
+            reward = 0
